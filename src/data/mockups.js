@@ -53,6 +53,55 @@ export const allMockups = [
     descKey: 'you can order this kinds of football kits',
     image: '/football6.jpg',
   },
+    {
+    id: 'football-07',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/football20.jpg',
+  },
+    {
+    id: 'football-08',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/football21.jpg',
+  },
+    {
+    id: 'football-09',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/football22.jpg',
+  },
+    {
+    id: 'football-10',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/football23.jpg',
+  },
+    {
+    id: 'football-11',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/football24.jpg',
+  },
+    {
+    id: 'football-12',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/football25.jpg',
+  },
+    {
+    id: 'football-13',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/football26.jpg',
+  },
 
   // Basketball (4)
   {
