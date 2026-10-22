@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
@@ -49,7 +48,7 @@ const cardVariants = {
   },
 };
 
-function Testimonial() {
+export function Testimonial() {
   return (
     <section
       className="testimonial-section"
@@ -137,3 +136,4 @@ function Testimonial() {
 }
 
 export default Testimonial;
+
