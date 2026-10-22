@@ -19,9 +19,9 @@ export function App() {
         <Navbar />
         <main>
           <Hero />
-          <Products />
           <About />
-          <MockupShowcase/>
+          <Products />
+          <MockupShowcase />
           <WhyChooseUs />
           <Showcase />
           <Testimonial />
