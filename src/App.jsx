@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './sections/Hero';
 import { Products } from './sections/Products';
 import { About } from './sections/About';
+import { Testimonial } from './sections/Testimonial';
 import { WhyChooseUs } from './sections/WhyChooseUs';
 import { Showcase } from './sections/Showcase';
 import { CTA } from './sections/CTA';
@@ -23,6 +24,7 @@ export function App() {
           <MockupShowcase/>
           <WhyChooseUs />
           <Showcase />
+          <Testimonial />
           <CTA />
           <Contact />
         </main>
