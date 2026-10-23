@@ -1,32 +1,31 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
+import { useTranslation } from
+'react-i18next';
 
-// Replace these sample entries with genuine customer reviews.
 const testimonials = [
   {
     id: 1,
-    name: "Customer One",
-    role: "Verified customer",
-    review:
-      "Add a genuine customer review here about their experience with Zewd Sportwear.",
+    name: "Sample Customer 1",
+    location: "Jimma",
     rating: 5,
+    reviewKey: "testimonial.review1",
   },
   {
     id: 2,
-    name: "Customer Two",
-    role: "Verified customer",
-    review:
-      "Add another genuine review describing the product quality or customer service.",
+    name: "Sample Customer 2",
+    location: "Jimma",
     rating: 5,
+    reviewKey: "testimonial.review2",
   },
   {
     id: 3,
-    name: "Customer Three",
-    role: "Verified customer",
-    review:
-      "Add a real customer's feedback about ordering and their experience with the brand.",
+    name: "Sample Customer 3",
+    location: "Jimma",
     rating: 5,
+    reviewKey: "testimonial.review3",
   },
 ];
 
@@ -44,11 +43,16 @@ const cardVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
+    },
   },
 };
 
-export function Testimonial() {
+function Testimonial() {
+  const { t } = useTranslation();
+
   return (
     <section
       className="testimonial-section"
@@ -64,17 +68,15 @@ export function Testimonial() {
           transition={{ duration: 0.6 }}
         >
           <span className="testimonial-eyebrow">
-            CUSTOMER EXPERIENCES
+            {t("testimonial.eyebrow")}
           </span>
 
           <h2 id="testimonial-heading">
-            What Our Customers <span>Say</span>
+            {t("testimonial.heading")}{" "}
+            <span>{t("testimonial.headingAccent")}</span>
           </h2>
 
-          <p>
-            Every order matters. Discover what our customers
-            think about their experience with Zewd Sportwear.
-          </p>
+          <p>{t("testimonial.description")}</p>
         </motion.div>
 
         <motion.div
@@ -114,17 +116,24 @@ export function Testimonial() {
               </div>
 
               <p className="testimonial-review">
-                "{testimonial.review}"
+                "{t(testimonial.reviewKey)}"
               </p>
 
               <div className="testimonial-customer">
-                <div className="testimonial-avatar" aria-hidden="true">
+                <div
+                  className="testimonial-avatar"
+                  aria-hidden="true"
+                >
                   {testimonial.name.charAt(0)}
                 </div>
 
                 <div className="testimonial-customer-info">
                   <h3>{testimonial.name}</h3>
-                  <span>{testimonial.role}</span>
+                  <span>
+                    {t("testimonial.customerLocation", {
+                      location: testimonial.location,
+                    })}
+                  </span>
                 </div>
               </div>
             </motion.article>
@@ -136,4 +145,5 @@ export function Testimonial() {
 }
 
 export default Testimonial;
+
 
