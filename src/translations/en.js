@@ -202,5 +202,15 @@ export const en = {
     products: "Products",
     contactUs: "Contact Us",
     rights: "All rights reserved. Designed for athletic excellence."
+  },
+  testimonial: {
+    "eyebrow": "CUSTOMER EXPERIENCES",
+    "heading": "What Our Customers",
+    "headingAccent": "Say",
+    "description": "Discover what customers think about their experience with Zewd Sportwear.",
+    "customerLocation": "{{location}}",
+    "review1": "The sportswear styles caught my attention. I liked being able to explore different designs in one place.",
+    "review2": "The website made it easy to browse the available sportswear. I could quickly find styles that interested me.",
+    "review3": "I enjoyed exploring the sportswear collection. The website layout made the products easy to discover."
   }
 };
