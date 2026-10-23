@@ -50,7 +50,7 @@ const cardVariants = {
   },
 };
 
-function Testimonial() {
+export function Testimonial() {
   const { t } = useTranslation();
 
   return (
