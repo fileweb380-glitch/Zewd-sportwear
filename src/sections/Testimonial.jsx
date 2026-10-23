@@ -2,17 +2,17 @@
 import React from "react";
 import { useLanguage } from "../context/LanguageContext";
 
-const Testimonial = () => {
+export const Testimonial = () => {
   const { t, lang } = useLanguage();
 
-  const content = t.testimonial;
+  const content = t?.testimonial;
 
   const customers = [
     {
       id: 1,
       name: "Sameri Bekele",
       initials: "SB",
-      review: content.review1,
+      review: content?.review1 || "",
       location:
         lang === "am"
           ? "ኢትዮጵያ"
@@ -24,7 +24,7 @@ const Testimonial = () => {
       id: 2,
       name: "Hana Tesfaye",
       initials: "HT",
-      review: content.review2,
+      review: content?.review2 || "",
       location:
         lang === "am"
           ? "ኢትዮጵያ"
@@ -36,7 +36,7 @@ const Testimonial = () => {
       id: 3,
       name: "Dawit Alemu",
       initials: "DA",
-      review: content.review3,
+      review: content?.review3 || "",
       location:
         lang === "am"
           ? "ኢትዮጵያ"
@@ -110,6 +110,4 @@ const Testimonial = () => {
 };
 
 export default Testimonial;
-
-
 
