@@ -184,5 +184,15 @@ export const om = {
     products: "Oomshaalee",
     contactUs: "Nu Quunnamaa",
     rights: "Mirgi hundi eegamaadha. Mo'icha isportitiif kan qopha'e."
+  },
+testimonial: {
+    "eyebrow": "YAADA MAAMILTOOTAA",
+    "heading": "Maamiltoonni Keenya",
+    "headingAccent": "Maal Jedhu?",
+    "description": "Yaada maamiltoonni waa'ee marsariitii Zewd Sportwear qaban ilaalaa.",
+    "customerLocation": "{{location}}",
+    "review1": "Akkaataa uffata ispoortii sanaa nan jaalladhe. Bakka tokko keessatti dizaayinoota adda addaa ilaaluu danda'uun na gammachiise.",
+    "review2": "Marsariitichi uffata ispoortii jiran ilaaluuf salphaa ture. Dizaayinoota na hawwatan saffisaan argachuu danda'e.",
+    "review3": "Walitti qabama uffata ispoortii sana ilaaluu nan gammade. Akkaataan marsariitichi qindaa'e oomishaalee argachuun akka salphatu taasise."
   }
 };
