@@ -1,122 +1,91 @@
 
 import React from "react";
-import { motion } from "framer-motion";
-import { Star, Quote } from "lucide-react";
-import { useTranslation } from
-'react-i18next';
+import { useLanguage } from "../context/LanguageContext";
 
-const testimonials = [
-  {
-    id: 1,
-    name: "Sameri",
-    location: "Addis ababa",
-    rating: 5,
-    reviewKey: "testimonial.review1",
-  },
-  {
-    id: 2,
-    name: "Eyob",
-    location: "Dire dewa",
-    rating: 5,
-    reviewKey: "testimonial.review2",
-  },
-  {
-    id: 3,
-    name: "Fuad Jimma tadagi Fc",
-    location: "Jimma",
-    rating: 5,
-    reviewKey: "testimonial.review3",
-  },
-];
+const Testimonial = () => {
+  const { t, lang } = useLanguage();
 
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.15,
+  const content = t.testimonial;
+
+  const customers = [
+    {
+      id: 1,
+      name: "Sameri Bekele",
+      initials: "SB",
+      review: content.review1,
+      location:
+        lang === "am"
+          ? "ኢትዮጵያ"
+          : lang === "om"
+          ? "Itoophiyaa"
+          : "Ethiopia",
     },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 25 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut",
+    {
+      id: 2,
+      name: "Hana Tesfaye",
+      initials: "HT",
+      review: content.review2,
+      location:
+        lang === "am"
+          ? "ኢትዮጵያ"
+          : lang === "om"
+          ? "Itoophiyaa"
+          : "Ethiopia",
     },
-  },
-};
+    {
+      id: 3,
+      name: "Dawit Alemu",
+      initials: "DA",
+      review: content.review3,
+      location:
+        lang === "am"
+          ? "ኢትዮጵያ"
+          : lang === "om"
+          ? "Itoophiyaa"
+          : "Ethiopia",
+    },
+  ];
 
-export function Testimonial() {
-  const { t } = useTranslation();
+  if (!content) {
+    return null;
+  }
 
   return (
-    <section
-      className="testimonial-section"
-      id="testimonials"
-      aria-labelledby="testimonial-heading"
-    >
+    <section className="testimonial-section" id="testimonials">
       <div className="testimonial-container">
-        <motion.div
-          className="testimonial-header"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6 }}
-        >
+        <div className="testimonial-header">
           <span className="testimonial-eyebrow">
-            {t("testimonial.eyebrow")}
+            {content.eyebrow}
           </span>
 
-          <h2 id="testimonial-heading">
-            {t("testimonial.heading")}{" "}
-            <span>{t("testimonial.headingAccent")}</span>
+          <h2 className="testimonial-heading">
+            {content.heading}{" "}
+            <span className="testimonial-heading-accent">
+              {content.headingAccent}
+            </span>
           </h2>
 
-          <p>{t("testimonial.description")}</p>
-        </motion.div>
+          <p className="testimonial-description">
+            {content.description}
+          </p>
+        </div>
 
-        <motion.div
-          className="testimonial-grid"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.15 }}
-        >
-          {testimonials.map((testimonial) => (
-            <motion.article
+        <div className="testimonial-grid">
+          {customers.map((customer) => (
+            <article
               className="testimonial-card"
-              key={testimonial.id}
-              variants={cardVariants}
+              key={customer.id}
             >
-              <div className="testimonial-card-top">
-                <div className="testimonial-quote-icon">
-                  <Quote size={25} aria-hidden="true" />
-                </div>
-
-                <div
-                  className="testimonial-stars"
-                  aria-label={`${testimonial.rating} out of 5 stars`}
-                >
-                  {Array.from(
-                    { length: testimonial.rating },
-                    (_, index) => (
-                      <Star
-                        key={index}
-                        size={17}
-                        fill="currentColor"
-                        aria-hidden="true"
-                      />
-                    )
-                  )}
-                </div>
+              <div className="testimonial-stars" aria-label="Five stars">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span key={star} aria-hidden="true">
+                    ★
+                  </span>
+                ))}
               </div>
 
               <p className="testimonial-review">
-                "{t(testimonial.reviewKey)}"
+                “{customer.review}”
               </p>
 
               <div className="testimonial-customer">
@@ -124,26 +93,23 @@ export function Testimonial() {
                   className="testimonial-avatar"
                   aria-hidden="true"
                 >
-                  {testimonial.name.charAt(0)}
+                  {customer.initials}
                 </div>
 
                 <div className="testimonial-customer-info">
-                  <h3>{testimonial.name}</h3>
-                  <span>
-                    {t("testimonial.customerLocation", {
-                      location: testimonial.location,
-                    })}
-                  </span>
+                  <h3>{customer.name}</h3>
+                  <p>{customer.location}</p>
                 </div>
               </div>
-            </motion.article>
+            </article>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
-}
+};
 
 export default Testimonial;
+
 
 
