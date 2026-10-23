@@ -8,21 +8,21 @@ import { useTranslation } from
 const testimonials = [
   {
     id: 1,
-    name: "Sample Customer 1",
-    location: "Jimma",
+    name: "Sameri",
+    location: "Addis ababa",
     rating: 5,
     reviewKey: "testimonial.review1",
   },
   {
     id: 2,
-    name: "Sample Customer 2",
-    location: "Jimma",
+    name: "Eyob",
+    location: "Dire dewa",
     rating: 5,
     reviewKey: "testimonial.review2",
   },
   {
     id: 3,
-    name: "Sample Customer 3",
+    name: "Fuad Jimma tadagi Fc",
     location: "Jimma",
     rating: 5,
     reviewKey: "testimonial.review3",
