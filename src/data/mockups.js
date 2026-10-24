@@ -178,7 +178,7 @@ export const allMockups = [
     nameKey: 'football jersy',
     descKey: 'you can order this kinds of football kits',
     image:'/IMG_20261024_101744_462.jpg',
-    }
+    },
 
   // Basketball (4)
   {
