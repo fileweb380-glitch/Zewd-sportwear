@@ -102,6 +102,83 @@ export const allMockups = [
     descKey: 'you can order this kinds of football kits',
     image: '/football26.jpg',
   },
+    {
+    id: 'football-14',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/IMG_20261024_101743_781.jpg',
+    },
+    {
+    id: 'football-15',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/IMG_20261024_101743_818.jpg',
+    },
+    {
+    id: 'football-16',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+      image:'/IMG_20261024_101743_855.jpg',
+    },
+    {
+    id: 'football-17',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/IMG_20261024_101743_971.jpg',
+    },
+    {
+    id: 'football-18',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image:'/IMG_20261024_101744_024.jpg',
+    },
+    {
+    id: 'football-19',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/IMG_20261024_101744_041.jpg',
+    },
+    {
+    id: 'football-20',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/IMG_20261024_101744_187.jpg',
+    },
+    {
+    id: 'football-21',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/IMG_20261024_101744_242.jpg',
+    },
+    {
+    id:'football-22',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image:'/IMG_20261024_101744_242.jpg',
+    },
+    {
+    id: 'football-23',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image: '/IMG_20261024_101744_461.jpg',
+    },
+    {
+    id: 'football-24',
+    category: 'football',
+    nameKey: 'football jersy',
+    descKey: 'you can order this kinds of football kits',
+    image:'/IMG_20261024_101744_462.jpg',
+    }
 
   // Basketball (4)
   {
