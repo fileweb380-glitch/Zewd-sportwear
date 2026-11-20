@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -15,7 +14,6 @@ import {
 } from 'lucide-react';
 
 import api from '../../services/api';
-
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
@@ -67,7 +65,7 @@ const AdminProducts = () => {
 
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
-      'Are you sure you want to delete this product? Its Cloudinary images will also be removed.'
+      'Are you sure you want to delete this product? Its uploaded images will also be removed.'
     );
 
     if (!confirmed) return;
@@ -94,7 +92,14 @@ const AdminProducts = () => {
   };
 
   const formatPrice = (price) => {
-    return Number(price || 0).toFixed(2);
+    if (price === null || price === undefined || price === '') {
+      return '—';
+    }
+    const num = Number(price);
+    if (!Number.isFinite(num)) {
+      return '—';
+    }
+    return `${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ETB`;
   };
 
   return (
@@ -306,7 +311,7 @@ const AdminProducts = () => {
 
                       <td>
                         <strong className="product-price">
-                          ${formatPrice(product.price)}
+                          {formatPrice(product.price)}
                         </strong>
                       </td>
 
@@ -374,3 +379,4 @@ const AdminProducts = () => {
 };
 
 export default AdminProducts;
+
