@@ -8,7 +8,6 @@ import {
   X,
   Package,
   Tag,
-  DollarSign,
   Ruler,
   Layers,
   Star,
@@ -19,7 +18,6 @@ import {
 } from 'lucide-react';
 
 import api from '../../services/api';
-
 
 const AdminProductForm = () => {
   const { id } = useParams();
@@ -63,7 +61,7 @@ const AdminProductForm = () => {
         setFormData({
           name: p.name || '',
           description: p.description || '',
-          price: p.price ?? '',
+          price: p.price !== null && p.price !== undefined ? String(p.price) : '',
           category: p.category || 'Football Jerseys',
           sizes: p.sizes?.join(', ') || 'S, M, L, XL',
           stockStatus: p.stockStatus || 'In Stock',
@@ -71,7 +69,6 @@ const AdminProductForm = () => {
         });
 
         setExistingImages(p.images || []);
-
       } catch (err) {
         console.error('Product loading error:', err);
 
@@ -82,7 +79,6 @@ const AdminProductForm = () => {
         );
 
         navigate('/admin/products');
-
       } finally {
         setFetching(false);
       }
@@ -186,15 +182,14 @@ const AdminProductForm = () => {
 
     if (!formData.name.trim() ||
         !formData.description.trim() ||
-        formData.price === '' ||
         !formData.category) {
       alert('Please complete all required fields.');
       return;
     }
 
-    if (!Number.isFinite(Number(formData.price)) ||
-        Number(formData.price) < 0) {
-      alert('Please enter a valid product price.');
+    const trimmedPrice = String(formData.price).trim();
+    if (trimmedPrice !== '' && (!Number.isFinite(Number(trimmedPrice)) || Number(trimmedPrice) < 0)) {
+      alert('Please enter a valid price in ETB or leave it blank.');
       return;
     }
 
@@ -205,7 +200,7 @@ const AdminProductForm = () => {
 
       data.append('name', formData.name.trim());
       data.append('description', formData.description.trim());
-      data.append('price', formData.price);
+      data.append('price', trimmedPrice);
       data.append('category', formData.category);
       data.append('sizes', formData.sizes);
       data.append('stockStatus', formData.stockStatus);
@@ -253,7 +248,6 @@ const AdminProductForm = () => {
       } else {
         alert(res.data.message || 'Unable to save product.');
       }
-
     } catch (err) {
       console.error('Product submission error:', err);
 
@@ -267,7 +261,6 @@ const AdminProductForm = () => {
           'Failed to save product. Please try again.'
         );
       }
-
     } finally {
       setLoading(false);
     }
@@ -388,11 +381,11 @@ const AdminProductForm = () => {
 
             <div className="product-field">
               <label htmlFor="product-price">
-                Price (USD) <span>*</span>
+                Price (ETB) (Optional)
               </label>
 
               <div className="product-input-wrapper">
-                <DollarSign size={18} />
+                <span className="currency-prefix">ETB</span>
 
                 <input
                   id="product-price"
@@ -402,10 +395,11 @@ const AdminProductForm = () => {
                   name="price"
                   value={formData.price}
                   onChange={handleChange}
-                  placeholder="49.99"
-                  required
+                  placeholder="Optional (e.g. 2500)"
                 />
               </div>
+
+              <small>Leave blank if price is not set or varies.</small>
             </div>
 
             <div className="product-field">
