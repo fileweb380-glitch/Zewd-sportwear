@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 
 import api from '../../services/api';
+import getImageUrl from '../../utils/imageUrl';
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
@@ -55,14 +57,17 @@ const AdminProducts = () => {
       }
     } catch (err) {
       console.error('Fetch products error:', err);
+
       setError(
-        err.response?.data?.message || 'Failed to load products. Please try again.'
+        err.response?.data?.message ||
+        'Failed to load products. Please try again.'
       );
     } finally {
       setLoading(false);
     }
   };
 
+  // Delete product
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
       'Are you sure you want to delete this product? Its uploaded images will also be removed.'
@@ -76,30 +81,42 @@ const AdminProducts = () => {
       const res = await api.delete(`/admin/products/${id}`);
 
       if (res.data.success) {
-        setProducts((previous) =>
-          previous.filter((product) => product._id !== id)
+        setProducts(previous =>
+          previous.filter(product => product._id !== id)
         );
+
         alert('Product deleted successfully.');
+      } else {
+        alert(res.data.message || 'Unable to delete product.');
       }
     } catch (err) {
       console.error('Delete product error:', err);
+
       alert(
-        err.response?.data?.message || 'Failed to delete product.'
+        err.response?.data?.message ||
+        'Failed to delete product.'
       );
     } finally {
       setDeletingId(null);
     }
   };
 
+  // Format price
   const formatPrice = (price) => {
     if (price === null || price === undefined || price === '') {
       return '—';
     }
+
     const num = Number(price);
+
     if (!Number.isFinite(num)) {
       return '—';
     }
-    return `${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ETB`;
+
+    return `${num.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })} ETB`;
   };
 
   return (
@@ -108,7 +125,9 @@ const AdminProducts = () => {
       {/* HEADER */}
       <div className="products-page-header">
         <div>
-          <span className="products-eyebrow">INVENTORY MANAGEMENT</span>
+          <span className="products-eyebrow">
+            INVENTORY MANAGEMENT
+          </span>
 
           <h1>Manage Products</h1>
 
@@ -128,6 +147,7 @@ const AdminProducts = () => {
 
       {/* SUMMARY */}
       <div className="products-summary">
+
         <div className="products-summary-card">
           <div className="summary-icon">
             <Package size={21} />
@@ -148,7 +168,7 @@ const AdminProducts = () => {
             <span>In Stock</span>
             <h3>
               {products.filter(
-                (product) => product.stockStatus === 'In Stock'
+                product => product.stockStatus === 'In Stock'
               ).length}
             </h3>
           </div>
@@ -162,10 +182,11 @@ const AdminProducts = () => {
           <div>
             <span>Featured Products</span>
             <h3>
-              {products.filter((product) => product.featured).length}
+              {products.filter(product => product.featured).length}
             </h3>
           </div>
         </div>
+
       </div>
 
       {/* FILTERS */}
@@ -178,7 +199,7 @@ const AdminProducts = () => {
             type="text"
             placeholder="Search products by name..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={e => setSearch(e.target.value)}
           />
         </div>
 
@@ -187,7 +208,7 @@ const AdminProducts = () => {
 
           <select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={e => setCategory(e.target.value)}
           >
             <option value="All">All Categories</option>
             <option value="Football Jerseys">Football Jerseys</option>
@@ -199,6 +220,7 @@ const AdminProducts = () => {
         </div>
 
         <button
+          type="button"
           className="products-refresh-btn"
           onClick={fetchProducts}
           disabled={loading}
@@ -213,9 +235,13 @@ const AdminProducts = () => {
       {error && (
         <div className="products-error">
           <AlertCircle size={19} />
+
           <span>{error}</span>
 
-          <button onClick={fetchProducts}>
+          <button
+            type="button"
+            onClick={fetchProducts}
+          >
             Try Again
           </button>
         </div>
@@ -242,6 +268,7 @@ const AdminProducts = () => {
           </div>
         ) : (
           <div className="products-table-wrapper">
+
             <table className="products-table">
 
               <thead>
@@ -256,12 +283,16 @@ const AdminProducts = () => {
               </thead>
 
               <tbody>
+
                 {products.length === 0 ? (
                   <tr>
                     <td colSpan="6">
+
                       <div className="products-empty">
                         <Package size={38} />
+
                         <h3>No products found</h3>
+
                         <p>
                           Try changing your search or add a new product.
                         </p>
@@ -271,22 +302,31 @@ const AdminProducts = () => {
                           Add Product
                         </Link>
                       </div>
+
                     </td>
                   </tr>
                 ) : (
-                  products.map((product) => (
+
+                  products.map(product => (
+
                     <tr key={product._id}>
 
+                      {/* PRODUCT */}
                       <td>
                         <div className="product-info-cell">
 
                           <img
                             src={
-                              product.images?.[0]?.url ||
+                              getImageUrl(product.images?.[0]?.url) ||
                               'https://placehold.co/80x80/191919/ffffff?text=No+Image'
                             }
                             alt={product.name}
                             className="product-table-image"
+                            onError={e => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src =
+                                'https://placehold.co/80x80/191919/ffffff?text=No+Image';
+                            }}
                           />
 
                           <div className="product-name-info">
@@ -294,7 +334,10 @@ const AdminProducts = () => {
 
                             {product.featured && (
                               <span className="product-featured">
-                                <Star size={12} fill="currentColor" />
+                                <Star
+                                  size={12}
+                                  fill="currentColor"
+                                />
                                 Featured
                               </span>
                             )}
@@ -303,18 +346,21 @@ const AdminProducts = () => {
                         </div>
                       </td>
 
+                      {/* CATEGORY */}
                       <td>
                         <span className="product-category">
                           {product.category}
                         </span>
                       </td>
 
+                      {/* PRICE */}
                       <td>
                         <strong className="product-price">
                           {formatPrice(product.price)}
                         </strong>
                       </td>
 
+                      {/* SIZES */}
                       <td>
                         <span className="product-sizes">
                           {product.sizes?.length
@@ -323,6 +369,7 @@ const AdminProducts = () => {
                         </span>
                       </td>
 
+                      {/* STOCK */}
                       <td>
                         <span
                           className={`product-stock ${
@@ -332,10 +379,12 @@ const AdminProducts = () => {
                           }`}
                         >
                           <span className="stock-dot"></span>
+
                           {product.stockStatus || 'Unknown'}
                         </span>
                       </td>
 
+                      {/* ACTIONS */}
                       <td>
                         <div className="product-actions">
 
@@ -348,13 +397,17 @@ const AdminProducts = () => {
                           </Link>
 
                           <button
+                            type="button"
                             onClick={() => handleDelete(product._id)}
                             className="product-delete-btn"
                             disabled={deletingId === product._id}
                             title="Delete product"
                           >
                             {deletingId === product._id ? (
-                              <RefreshCw size={16} className="spin-icon" />
+                              <RefreshCw
+                                size={16}
+                                className="spin-icon"
+                              />
                             ) : (
                               <Trash2 size={16} />
                             )}
@@ -364,11 +417,14 @@ const AdminProducts = () => {
                       </td>
 
                     </tr>
+
                   ))
                 )}
+
               </tbody>
 
             </table>
+
           </div>
         )}
 
@@ -379,4 +435,5 @@ const AdminProducts = () => {
 };
 
 export default AdminProducts;
+
 
