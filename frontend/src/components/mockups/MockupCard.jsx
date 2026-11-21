@@ -1,18 +1,35 @@
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Eye } from 'lucide-react';
 
+import getImageUrl from '../../utils/imageUrl';
+
 export const MockupCard = ({ item, onSelect }) => {
   const { t } = useTranslation();
 
-  const displayTitle = item.nameKey ? t(item.nameKey) : (item.name || item.title || '');
-  const displayDesc = item.descKey ? t(item.descKey) : (item.description || '');
-  const displayImage =
+  const displayTitle = item.nameKey
+    ? t(item.nameKey)
+    : (item.name || item.title || '');
+
+  const displayDesc = item.descKey
+    ? t(item.descKey)
+    : (item.description || '');
+
+  const rawImage =
     item.image ||
     (Array.isArray(item.images) &&
-      (typeof item.images[0] === 'string' ? item.images[0] : item.images[0]?.url)) ||
+      (
+        typeof item.images[0] === 'string'
+          ? item.images[0]
+          : item.images[0]?.url
+      )) ||
     '';
+
+  const displayImage = rawImage
+    ? getImageUrl(rawImage)
+    : '';
 
   return (
     <motion.div
@@ -25,14 +42,19 @@ export const MockupCard = ({ item, onSelect }) => {
       whileHover={{ y: -6 }}
     >
       <div className="zewd-card-image-wrap">
+
         {displayImage && (
           <img
             src={displayImage}
             alt={displayTitle}
             className="zewd-card-img"
             loading="lazy"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
           />
         )}
+
         <div className="zewd-card-overlay">
           <button
             onClick={() => onSelect(item)}
@@ -46,14 +68,25 @@ export const MockupCard = ({ item, onSelect }) => {
       </div>
 
       <div className="zewd-card-content">
+
         <span className="zewd-card-category">
           {t(`${item.category || ''}`)}
         </span>
-        <h3 className="zewd-card-title">{displayTitle}</h3>
-        <p className="zewd-card-desc">{displayDesc}</p>
+
+        <h3 className="zewd-card-title">
+          {displayTitle}
+        </h3>
+
+        <p className="zewd-card-desc">
+          {displayDesc}
+        </p>
+
         {item.price !== undefined && item.price !== null && (
-          <p className="zewd-card-price">${Number(item.price).toFixed(2)}</p>
+          <p className="zewd-card-price">
+            {item.currency || 'ETB'} {Number(item.price).toFixed(2)}
+          </p>
         )}
+
         <button
           onClick={() => onSelect(item)}
           className="zewd-card-action-btn"
@@ -61,6 +94,7 @@ export const MockupCard = ({ item, onSelect }) => {
         >
           {t('View detail')}
         </button>
+
       </div>
     </motion.div>
   );
