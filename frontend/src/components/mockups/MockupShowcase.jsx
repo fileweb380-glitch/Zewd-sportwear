@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -5,6 +6,8 @@ import { ChevronLeft, ChevronRight, Phone } from 'lucide-react';
 
 import { allMockups, ZEWD_PHONE } from '../../data/mockups';
 import api from '../../services/api';
+import getImageUrl from '../../utils/imageUrl';
+
 import { MockupFilters } from './MockupFilters';
 import { MockupCard } from './MockupCard';
 import { MockupModal } from './MockupModal';
@@ -16,13 +19,25 @@ const normalizeBackendProduct = (product) => {
         .filter(Boolean)
     : [];
 
+  const resolvedImages = imageList.map((imageUrl) =>
+    getImageUrl(imageUrl)
+  );
+
+  const fallbackImage = product.image
+    ? getImageUrl(product.image)
+    : '';
+
   return {
     ...product,
     id: product._id || product.id,
     title: product.title || product.name || '',
     name: product.name || product.title || '',
-    image: imageList[0] || product.image || '',
-    images: imageList,
+    image: resolvedImages[0] || fallbackImage,
+    images: resolvedImages.length > 0
+      ? resolvedImages
+      : fallbackImage
+        ? [fallbackImage]
+        : [],
     rawImages: product.images || [],
   };
 };
@@ -45,7 +60,9 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
       try {
         setLoading(true);
         setError('');
+
         const res = await api.get('/products');
+
         const list = Array.isArray(res.data?.products)
           ? res.data.products
           : Array.isArray(res.data)
@@ -57,7 +74,10 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
         }
       } catch (err) {
         if (isMounted) {
-          setError(err.response?.data?.message || 'Failed to load products');
+          setError(
+            err.response?.data?.message ||
+            'Failed to load products'
+          );
         }
       } finally {
         if (isMounted) {
@@ -74,10 +94,7 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
   }, []);
 
   const showcaseItems = useMemo(() => {
-    if (products.length > 0) {
-      return products;
-    }
-    return allMockups;
+    return products.length > 0 ? products : allMockups;
   }, [products]);
 
   const filteredMockups = useMemo(() => {
@@ -89,6 +106,7 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
 
     return showcaseItems.filter((item) => {
       const itemCat = (item.category || '').toLowerCase();
+
       return (
         itemCat === targetCategory ||
         itemCat.includes(targetCategory) ||
@@ -169,9 +187,7 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
   const getCardPosition = (index) => {
     const diff = index - activeIndex;
 
-    if (diff === 0) {
-      return 'center';
-    }
+    if (diff === 0) return 'center';
 
     if (diff === 1 || diff === -(total - 1)) {
       return 'right';
@@ -258,21 +274,41 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
           onSelectCategory={handleCategoryChange}
         />
 
-        {/* LOADING / ERROR / EMPTY */}
+        {/* LOADING */}
         {loading && (
-          <p className="zewd-section-subtitle" style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+          <p
+            className="zewd-section-subtitle"
+            style={{
+              textAlign: 'center',
+              marginTop: '1.5rem',
+            }}
+          >
             {t('Loading products...')}
           </p>
         )}
 
+        {/* ERROR */}
         {!loading && error && products.length === 0 && (
-          <p className="zewd-section-subtitle" style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+          <p
+            className="zewd-section-subtitle"
+            style={{
+              textAlign: 'center',
+              marginTop: '1.5rem',
+            }}
+          >
             {error}
           </p>
         )}
 
+        {/* EMPTY */}
         {!loading && total === 0 && (
-          <p className="zewd-section-subtitle" style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+          <p
+            className="zewd-section-subtitle"
+            style={{
+              textAlign: 'center',
+              marginTop: '1.5rem',
+            }}
+          >
             {t('No jerseys found in this category.')}
           </p>
         )}
