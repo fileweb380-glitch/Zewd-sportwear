@@ -248,8 +248,54 @@ const AdminProductForm = () => {
       } else {
         alert(res.data.message || 'Unable to save product.');
       }
-    } catch (err) {
-      console.error('Product submission error:', err);
+    
+
+} catch (err) {
+  console.error('========== PRODUCT SUBMISSION ERROR ==========');
+  console.error('Message:', err.message);
+  console.error('HTTP status:', err.response?.status);
+  console.error('Response data:', err.response?.data);
+  console.error('Request URL:', err.config?.baseURL, err.config?.url);
+  console.error('================================================');
+
+  if (err.code === 'ECONNABORTED') {
+    alert('Upload timed out. Try smaller images.');
+  } else {
+    alert(
+      err.response?.data?.message ||
+      err.message ||
+      'Failed to save product.'
+    );
+  }
+```
+
+Keep your existing `finally` block.
+
+This will help us distinguish an HTTP 403 response from Cloudinary's internal upload error.
+
+## 4. I need one final backend file
+
+Please send me your **`server.js`**.
+
+I specifically want to inspect how you register your product routes. For example:
+
+```javascript
+app.use('/api/admin/products', productRoutes);
+```
+
+We need to confirm that the frontend URL matches the backend route.
+
+## 5. Check these three things
+
+- [ ] In Render → Environment, confirm the Cloudinary API key and secret belong to the same API key pair.
+- [ ] In your frontend hosting environment, check whether `VITE_API_URL` is set to the correct backend URL.
+- [ ] After deploying the debugging change, try publishing once and check the Render Live Logs immediately.
+
+**Please don't send your Cloudinary API secret here.**
+
+My recommendation: Send me `server.js` next, then the new error output. I want to solve the actual cause rather than keep making changes that might introduce new bugs.
+
+We're getting closer to getting Z E W D Sportswear's product publishing working! 🚀
 
       if (err.code === 'ECONNABORTED') {
         alert(
