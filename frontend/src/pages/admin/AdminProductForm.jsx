@@ -18,11 +18,13 @@ import {
 } from 'lucide-react';
 
 import api from '../../services/api';
+import getImageUrl from '../../utils/imageUrl';
 
 const AdminProductForm = () => {
   const { id } = useParams();
   const isEditMode = Boolean(id);
   const navigate = useNavigate();
+
   const fileInputRef = useRef(null);
   const previewUrlsRef = useRef([]);
 
@@ -53,7 +55,9 @@ const AdminProductForm = () => {
         const res = await api.get(`/products/${id}`);
 
         if (!res.data.success) {
-          throw new Error('Unable to load product details.');
+          throw new Error(
+            res.data.message || 'Unable to load product details.'
+          );
         }
 
         const p = res.data.product;
@@ -61,7 +65,10 @@ const AdminProductForm = () => {
         setFormData({
           name: p.name || '',
           description: p.description || '',
-          price: p.price !== null && p.price !== undefined ? String(p.price) : '',
+          price:
+            p.price !== null && p.price !== undefined
+              ? String(p.price)
+              : '',
           category: p.category || 'Football Jerseys',
           sizes: p.sizes?.join(', ') || 'S, M, L, XL',
           stockStatus: p.stockStatus || 'In Stock',
@@ -87,7 +94,7 @@ const AdminProductForm = () => {
     fetchProductDetails();
   }, [id, isEditMode, navigate]);
 
-  // Clean up temporary image URLs
+  // Clean up temporary image preview URLs
   useEffect(() => {
     return () => {
       previewUrlsRef.current.forEach(url => {
@@ -105,6 +112,7 @@ const AdminProductForm = () => {
     }));
   };
 
+  // Select new images
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files || []);
 
@@ -134,6 +142,7 @@ const AdminProductForm = () => {
       return;
     }
 
+    // Revoke previous preview URLs
     previewUrlsRef.current.forEach(url => {
       URL.revokeObjectURL(url);
     });
@@ -148,20 +157,22 @@ const AdminProductForm = () => {
     setImagePreviews(previews);
   };
 
+  // Remove an existing image
   const removeExistingImage = (index) => {
     setExistingImages(prev =>
       prev.filter((_, idx) => idx !== index)
     );
   };
 
+  // Remove a newly selected image
   const removeNewImage = (index) => {
     const url = imagePreviews[index];
 
     if (url) {
       URL.revokeObjectURL(url);
-      previewUrlsRef.current = previewUrlsRef.current.filter(
-        item => item !== url
-      );
+
+      previewUrlsRef.current =
+        previewUrlsRef.current.filter(item => item !== url);
     }
 
     setNewFiles(prev =>
@@ -177,18 +188,28 @@ const AdminProductForm = () => {
     }
   };
 
+  // Submit product
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name.trim() ||
-        !formData.description.trim() ||
-        !formData.category) {
+    if (
+      !formData.name.trim() ||
+      !formData.description.trim() ||
+      !formData.category
+    ) {
       alert('Please complete all required fields.');
       return;
     }
 
     const trimmedPrice = String(formData.price).trim();
-    if (trimmedPrice !== '' && (!Number.isFinite(Number(trimmedPrice)) || Number(trimmedPrice) < 0)) {
+
+    if (
+      trimmedPrice !== '' &&
+      (
+        !Number.isFinite(Number(trimmedPrice)) ||
+        Number(trimmedPrice) < 0
+      )
+    ) {
       alert('Please enter a valid price in ETB or leave it blank.');
       return;
     }
@@ -246,56 +267,19 @@ const AdminProductForm = () => {
 
         navigate('/admin/products');
       } else {
-        alert(res.data.message || 'Unable to save product.');
+        alert(
+          res.data.message || 'Unable to save product.'
+        );
       }
-    
 
-} catch (err) {
-  console.error('========== PRODUCT SUBMISSION ERROR ==========');
-  console.error('Message:', err.message);
-  console.error('HTTP status:', err.response?.status);
-  console.error('Response data:', err.response?.data);
-  console.error('Request URL:', err.config?.baseURL, err.config?.url);
-  console.error('================================================');
-
-  if (err.code === 'ECONNABORTED') {
-    alert('Upload timed out. Try smaller images.');
-  } else {
-    alert(
-      err.response?.data?.message ||
-      err.message ||
-      'Failed to save product.'
-    );
-  }
-```
-
-Keep your existing `finally` block.
-
-This will help us distinguish an HTTP 403 response from Cloudinary's internal upload error.
-
-## 4. I need one final backend file
-
-Please send me your **`server.js`**.
-
-I specifically want to inspect how you register your product routes. For example:
-
-```javascript
-app.use('/api/admin/products', productRoutes);
-```
-
-We need to confirm that the frontend URL matches the backend route.
-
-## 5. Check these three things
-
-- [ ] In Render → Environment, confirm the Cloudinary API key and secret belong to the same API key pair.
-- [ ] In your frontend hosting environment, check whether `VITE_API_URL` is set to the correct backend URL.
-- [ ] After deploying the debugging change, try publishing once and check the Render Live Logs immediately.
-
-**Please don't send your Cloudinary API secret here.**
-
-My recommendation: Send me `server.js` next, then the new error output. I want to solve the actual cause rather than keep making changes that might introduce new bugs.
-
-We're getting closer to getting Z E W D Sportswear's product publishing working! 🚀
+    } catch (err) {
+      console.error('========== PRODUCT SUBMISSION ERROR ==========');
+      console.error('Message:', err.message);
+      console.error('HTTP status:', err.response?.status);
+      console.error('Response data:', err.response?.data);
+      console.error('Request URL:', err.config?.baseURL, err.config?.url);
+      console.error('Error code:', err.code);
+      console.error('==============================================');
 
       if (err.code === 'ECONNABORTED') {
         alert(
@@ -304,9 +288,11 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
       } else {
         alert(
           err.response?.data?.message ||
+          err.message ||
           'Failed to save product. Please try again.'
         );
       }
+
     } finally {
       setLoading(false);
     }
@@ -327,7 +313,6 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
 
       {/* HEADER */}
       <div className="product-form-header">
-
         <div>
           <button
             type="button"
@@ -357,7 +342,6 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
         <div className="product-form-header-icon">
           <Package size={35} />
         </div>
-
       </div>
 
       <form
@@ -367,7 +351,6 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
 
         {/* BASIC INFORMATION */}
         <section className="product-form-section">
-
           <div className="product-form-section-title">
             <div className="form-section-icon">
               <Package size={19} />
@@ -494,7 +477,6 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
 
         {/* DESCRIPTION */}
         <section className="product-form-section">
-
           <div className="product-form-section-title">
             <div className="form-section-icon">
               <FileText size={19} />
@@ -521,12 +503,10 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
               required
             />
           </div>
-
         </section>
 
         {/* FEATURED PRODUCT */}
         <section className="product-featured-section">
-
           <div className="featured-section-icon">
             <Star size={22} />
           </div>
@@ -548,12 +528,10 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
 
             <span className="featured-toggle-slider"></span>
           </label>
-
         </section>
 
         {/* IMAGE MANAGEMENT */}
         <section className="product-form-section">
-
           <div className="product-form-section-title">
             <div className="form-section-icon">
               <ImagePlus size={19} />
@@ -567,20 +545,21 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
 
           {existingImages.length > 0 && (
             <div className="product-image-group">
-
               <div className="product-image-heading">
                 <h3>Existing Images</h3>
                 <span>{existingImages.length} images</span>
               </div>
 
               <div className="product-image-grid">
-
                 {existingImages.map((img, index) => (
                   <div
                     className="product-image-card"
-                    key={img.public_id || img.url || index}
+                    key={img.fileId || img.public_id || img.url || index}
                   >
-                    <img src={img.url} alt="Existing product" />
+                    <img
+                      src={getImageUrl(img.url)}
+                      alt="Existing product"
+                    />
 
                     <span className="image-existing-label">
                       Existing
@@ -596,13 +575,11 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
                     </button>
                   </div>
                 ))}
-
               </div>
             </div>
           )}
 
           <div className="product-image-group">
-
             <div className="product-image-heading">
               <h3>Upload New Images</h3>
               <span>Maximum 5 new images</span>
@@ -630,9 +607,18 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
                 Click here to browse images from your device.
               </p>
 
-              <span>PNG, JPG, JPEG, WEBP · Maximum 5MB each</span>
+              <span>
+                PNG, JPG, JPEG, WEBP · Maximum 5MB each
+              </span>
 
-              <button type="button" className="upload-browse-btn">
+              <button
+                type="button"
+                className="upload-browse-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
                 <ImagePlus size={16} />
                 Browse Images
               </button>
@@ -655,10 +641,15 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
                 </div>
 
                 <div className="product-image-grid">
-
                   {imagePreviews.map((src, index) => (
-                    <div className="product-image-card" key={src}>
-                      <img src={src} alt={`New product ${index + 1}`} />
+                    <div
+                      className="product-image-card"
+                      key={src}
+                    >
+                      <img
+                        src={src}
+                        alt={`New product ${index + 1}`}
+                      />
 
                       <span className="image-new-label">
                         New Image
@@ -674,18 +665,14 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
                       </button>
                     </div>
                   ))}
-
                 </div>
               </>
             )}
-
           </div>
-
         </section>
 
         {/* FORM ACTIONS */}
         <div className="product-form-actions">
-
           <button
             type="button"
             className="product-cancel-btn"
@@ -702,23 +689,30 @@ We're getting closer to getting Z E W D Sportswear's product publishing working!
           >
             {loading ? (
               <>
-                <LoaderCircle className="form-button-spinner" size={18} />
-                {isEditMode ? 'Updating Product...' : 'Publishing Product...'}
+                <LoaderCircle
+                  className="form-button-spinner"
+                  size={18}
+                />
+                {isEditMode
+                  ? 'Updating Product...'
+                  : 'Publishing Product...'}
               </>
             ) : (
               <>
                 <CheckCircle2 size={18} />
-                {isEditMode ? 'Update Product' : 'Publish Product'}
+                {isEditMode
+                  ? 'Update Product'
+                  : 'Publish Product'}
               </>
             )}
           </button>
-
         </div>
 
       </form>
-
     </div>
   );
 };
 
 export default AdminProductForm;
+
+  
