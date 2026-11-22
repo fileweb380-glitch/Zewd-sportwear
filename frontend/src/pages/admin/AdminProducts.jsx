@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Plus,
@@ -17,6 +17,13 @@ import {
 import api from '../../services/api';
 import getImageUrl from '../../utils/imageUrl';
 
+const CATEGORIES = [
+  'Football',
+  'Basketball',
+  'Gym',
+  'Tennis'
+];
+
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
@@ -25,15 +32,7 @@ const AdminProducts = () => {
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchProducts();
-    }, 350);
-
-    return () => clearTimeout(timer);
-  }, [search, category]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -51,23 +50,39 @@ const AdminProducts = () => {
       const res = await api.get('/products', { params });
 
       if (res.data.success) {
-        setProducts(res.data.products || []);
+        setProducts(
+          Array.isArray(res.data.products)
+            ? res.data.products
+            : []
+        );
       } else {
-        setProducts([]);
+        throw new Error(
+          res.data.message || 'Unable to load products.'
+        );
       }
+
     } catch (err) {
       console.error('Fetch products error:', err);
 
       setError(
         err.response?.data?.message ||
+        err.message ||
         'Failed to load products. Please try again.'
       );
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, category]);
 
-  // Delete product
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchProducts();
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [fetchProducts]);
+
+  // DELETE PRODUCT
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
       'Are you sure you want to delete this product? Its uploaded images will also be removed.'
@@ -89,6 +104,7 @@ const AdminProducts = () => {
       } else {
         alert(res.data.message || 'Unable to delete product.');
       }
+
     } catch (err) {
       console.error('Delete product error:', err);
 
@@ -101,9 +117,13 @@ const AdminProducts = () => {
     }
   };
 
-  // Format price
+  // FORMAT PRICE
   const formatPrice = (price) => {
-    if (price === null || price === undefined || price === '') {
+    if (
+      price === null ||
+      price === undefined ||
+      price === ''
+    ) {
       return '—';
     }
 
@@ -119,11 +139,21 @@ const AdminProducts = () => {
     })} ETB`;
   };
 
+  // SUMMARY COUNTS
+  const inStockCount = products.filter(
+    product => product.stockStatus === 'In Stock'
+  ).length;
+
+  const featuredCount = products.filter(
+    product => product.featured
+  ).length;
+
   return (
     <div className="admin-products-page">
 
       {/* HEADER */}
       <div className="products-page-header">
+
         <div>
           <span className="products-eyebrow">
             INVENTORY MANAGEMENT
@@ -143,6 +173,7 @@ const AdminProducts = () => {
           <Plus size={19} />
           Add New Product
         </Link>
+
       </div>
 
       {/* SUMMARY */}
@@ -166,11 +197,7 @@ const AdminProducts = () => {
 
           <div>
             <span>In Stock</span>
-            <h3>
-              {products.filter(
-                product => product.stockStatus === 'In Stock'
-              ).length}
-            </h3>
+            <h3>{inStockCount}</h3>
           </div>
         </div>
 
@@ -181,9 +208,7 @@ const AdminProducts = () => {
 
           <div>
             <span>Featured Products</span>
-            <h3>
-              {products.filter(product => product.featured).length}
-            </h3>
+            <h3>{featuredCount}</h3>
           </div>
         </div>
 
@@ -211,11 +236,13 @@ const AdminProducts = () => {
             onChange={e => setCategory(e.target.value)}
           >
             <option value="All">All Categories</option>
-            <option value="Football Jerseys">Football Jerseys</option>
-            <option value="Basketball Jerseys">Basketball Jerseys</option>
-            <option value="Training Wear">Training Wear</option>
-            <option value="Sportswear">Sportswear</option>
-            <option value="Accessories">Accessories</option>
+
+            {CATEGORIES.map(item => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+
           </select>
         </div>
 
@@ -226,7 +253,10 @@ const AdminProducts = () => {
           disabled={loading}
           title="Refresh products"
         >
-          <RefreshCw size={18} />
+          <RefreshCw
+            size={18}
+            className={loading ? 'spin-icon' : ''}
+          />
         </button>
 
       </div>
@@ -234,6 +264,7 @@ const AdminProducts = () => {
       {/* ERROR */}
       {error && (
         <div className="products-error">
+
           <AlertCircle size={19} />
 
           <span>{error}</span>
@@ -241,9 +272,11 @@ const AdminProducts = () => {
           <button
             type="button"
             onClick={fetchProducts}
+            disabled={loading}
           >
             Try Again
           </button>
+
         </div>
       )}
 
@@ -251,22 +284,34 @@ const AdminProducts = () => {
       <div className="products-table-card">
 
         <div className="products-table-header">
+
           <div>
-            <h2>All Products</h2>
-            <p>Manage your store's products and stock.</p>
+            <h2>
+              {category === 'All'
+                ? 'All Products'
+                : `${category} Products`}
+            </h2>
+
+            <p>
+              Manage your store's products and stock.
+            </p>
           </div>
 
           <span className="products-count">
             {products.length} Products
           </span>
+
         </div>
 
         {loading ? (
+
           <div className="products-loading">
             <div className="products-spinner"></div>
             <p>Loading your products...</p>
           </div>
+
         ) : (
+
           <div className="products-table-wrapper">
 
             <table className="products-table">
@@ -285,10 +330,12 @@ const AdminProducts = () => {
               <tbody>
 
                 {products.length === 0 ? (
+
                   <tr>
                     <td colSpan="6">
 
                       <div className="products-empty">
+
                         <Package size={38} />
 
                         <h3>No products found</h3>
@@ -301,10 +348,12 @@ const AdminProducts = () => {
                           <Plus size={17} />
                           Add Product
                         </Link>
+
                       </div>
 
                     </td>
                   </tr>
+
                 ) : (
 
                   products.map(product => (
@@ -330,6 +379,7 @@ const AdminProducts = () => {
                           />
 
                           <div className="product-name-info">
+
                             <strong>{product.name}</strong>
 
                             {product.featured && (
@@ -341,6 +391,7 @@ const AdminProducts = () => {
                                 Featured
                               </span>
                             )}
+
                           </div>
 
                         </div>
@@ -419,6 +470,7 @@ const AdminProducts = () => {
                     </tr>
 
                   ))
+
                 )}
 
               </tbody>
@@ -426,6 +478,7 @@ const AdminProducts = () => {
             </table>
 
           </div>
+
         )}
 
       </div>
@@ -435,5 +488,3 @@ const AdminProducts = () => {
 };
 
 export default AdminProducts;
-
-
