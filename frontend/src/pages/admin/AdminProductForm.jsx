@@ -32,7 +32,7 @@ const AdminProductForm = () => {
     name: '',
     description: '',
     price: '',
-    category: 'Football Jerseys',
+    category: 'Football',
     sizes: 'S, M, L, XL, XXL',
     stockStatus: 'In Stock',
     featured: false
@@ -69,7 +69,14 @@ const AdminProductForm = () => {
             p.price !== null && p.price !== undefined
               ? String(p.price)
               : '',
-          category: p.category || 'Football Jerseys',
+          category: [
+  'Football',
+  'Basketball',
+  'Gym',
+  'Tennis'
+].includes(p.category)
+  ? p.category
+  : '',
           sizes: p.sizes?.join(', ') || 'S, M, L, XL',
           stockStatus: p.stockStatus || 'In Stock',
           featured: Boolean(p.featured)
@@ -384,29 +391,34 @@ const AdminProductForm = () => {
               </div>
             </div>
 
-            <div className="product-field">
-              <label htmlFor="product-category">
-                Category <span>*</span>
-              </label>
+   
+<div className="product-field">
+  <label htmlFor="product-category">
+    Category <span>*</span>
+  </label>
 
-              <div className="product-input-wrapper">
-                <Tag size={18} />
+  <div className="product-input-wrapper">
+    <Tag size={18} />
 
-                <select
-                  id="product-category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="Football Jerseys">Football Jerseys</option>
-                  <option value="Basketball Jerseys">Basketball Jerseys</option>
-                  <option value="Training Wear">Training Wear</option>
-                  <option value="Sportswear">Sportswear</option>
-                  <option value="Accessories">Accessories</option>
-                </select>
-              </div>
-            </div>
+    <select
+      id="product-category"
+      name="category"
+      value={formData.category}
+      onChange={handleChange}
+      required
+    >
+      <option value="" disabled>
+        Select Product Category
+      </option>
+
+      <option value="Football">Football</option>
+      <option value="Basketball">Basketball</option>
+      <option value="Gym">Gym</option>
+      <option value="Tennis">Tennis</option>
+    </select>
+  </div>
+</div>
+
 
             <div className="product-field">
               <label htmlFor="product-price">
