@@ -12,6 +12,17 @@ import { MockupFilters } from './MockupFilters';
 import { MockupCard } from './MockupCard';
 import { MockupModal } from './MockupModal';
 
+const normalizeCategory = (category) => {
+  const value = String(category || '').trim().toLowerCase();
+
+  if (value.includes('football')) return 'football';
+  if (value.includes('basketball')) return 'basketball';
+  if (value.includes('tennis')) return 'tennis';
+  if (value.includes('gym')) return 'gym';
+
+  return value;
+};
+
 const normalizeBackendProduct = (product) => {
   const imageList = Array.isArray(product.images)
     ? product.images
@@ -32,6 +43,7 @@ const normalizeBackendProduct = (product) => {
     id: product._id || product.id,
     title: product.title || product.name || '',
     name: product.name || product.title || '',
+    category: normalizeCategory(product.category),
     image: resolvedImages[0] || fallbackImage,
     images: resolvedImages.length > 0
       ? resolvedImages
@@ -102,26 +114,32 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
       return showcaseItems;
     }
 
-    const targetCategory = activeCategory.toLowerCase();
-
     return showcaseItems.filter((item) => {
-      const itemCat = (item.category || '').toLowerCase();
-
-      return (
-        itemCat === targetCategory ||
-        itemCat.includes(targetCategory) ||
-        targetCategory.includes(itemCat)
-      );
+      return normalizeCategory(item.category) === activeCategory;
     });
   }, [activeCategory, showcaseItems]);
 
   const total = filteredMockups.length;
 
   useEffect(() => {
-    if (activeIndex >= total && total > 0) {
+    if (activeIndex >= total) {
       setActiveIndex(0);
     }
   }, [total, activeIndex]);
+
+  useEffect(() => {
+    if (selectedMockup) {
+      const updatedSelected = filteredMockups.find(
+        (item) => item.id === selectedMockup.id
+      );
+
+      if (!updatedSelected) {
+        setSelectedMockup(null);
+      } else {
+        setSelectedMockup(updatedSelected);
+      }
+    }
+  }, [filteredMockups, selectedMockup]);
 
   const nextMockup = () => {
     if (!total) return;
@@ -250,8 +268,6 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
       id="mockupshowcase"
     >
       <div className="zewd-container">
-
-        {/* HEADER */}
         <div className="zewd-section-header">
           <span className="zewd-sub-badge">
             ZEWD SPORTSWEAR
@@ -268,13 +284,11 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
           </p>
         </div>
 
-        {/* FILTERS */}
         <MockupFilters
           activeCategory={activeCategory}
           onSelectCategory={handleCategoryChange}
         />
 
-        {/* LOADING */}
         {loading && (
           <p
             className="zewd-section-subtitle"
@@ -287,7 +301,6 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
           </p>
         )}
 
-        {/* ERROR */}
         {!loading && error && products.length === 0 && (
           <p
             className="zewd-section-subtitle"
@@ -300,7 +313,6 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
           </p>
         )}
 
-        {/* EMPTY */}
         {!loading && total === 0 && (
           <p
             className="zewd-section-subtitle"
@@ -313,12 +325,9 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
           </p>
         )}
 
-        {/* 3D SHOWCASE */}
         {total > 0 && (
           <div className="zewd-3d-showcase">
-
             <div className="zewd-3d-stage">
-
               <div className="zewd-3d-glow zewd-3d-glow-red" />
               <div className="zewd-3d-glow zewd-3d-glow-green" />
 
@@ -347,7 +356,6 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
                 })}
               </AnimatePresence>
 
-              {/* DESKTOP / TABLET ARROWS */}
               <button
                 type="button"
                 className="zewd-3d-arrow zewd-3d-arrow-left"
@@ -365,12 +373,9 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
               >
                 <ChevronRight size={24} />
               </button>
-
             </div>
 
-            {/* CONTROLS */}
             <div className="zewd-3d-controls">
-
               <button
                 type="button"
                 className="zewd-3d-control-btn"
@@ -400,10 +405,8 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
               >
                 <ChevronRight size={18} />
               </button>
-
             </div>
 
-            {/* DOTS */}
             <div className="zewd-3d-dots">
               {filteredMockups.map((item, index) => (
                 <button
@@ -419,13 +422,10 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
                 />
               ))}
             </div>
-
           </div>
         )}
 
-        {/* CTA */}
         <div className="zewd-cta-banner">
-
           <div className="zewd-cta-content">
             <span className="zewd-cta-label">
               ZEWD CUSTOM KITS
@@ -463,11 +463,9 @@ export const MockupShowcase = ({ phone = ZEWD_PHONE }) => {
               </span>
             </a>
           )}
-
         </div>
       </div>
 
-      {/* MODAL */}
       {selectedMockup && (
         <MockupModal
           item={selectedMockup}
